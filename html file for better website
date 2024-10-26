@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>seed Education Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <button id="menu-trigger" aria-label="Open menu">
+                <i data-lucide="menu"></i>
+            </button>
+            <h1 class="logo">se<i data-lucide="eye"></i>ed</h1>
+        </header>
+
+        <nav id="side-nav">
+            <button id="close-nav" aria-label="Close menu">&times;</button>
+            <a href="/">Home</a>
+            <a href="/personal-details">Personal Details</a>
+            <a href="/signup">Sign Up</a>
+            <a href="/logout">Logout</a>
+            <a href="mailto:helpdesk@example.com">Help Desk</a>
+        </nav>
+
+        <main id="main-content">
+            <div id="class-board-selection" class="section">
+                <h2>Select Your Class and Board</h2>
+                <div class="card">
+                    <select id="class-select">
+                        <option value="">Select Class</option>
+                    </select>
+                    <div id="board-buttons"></div>
+                </div>
+            </div>
+
+            <div id="subject-selection" class="section hidden">
+                <h2 id="subject-header"></h2>
+                <div class="card">
+                    <h3>Select a Subject</h3>
+                    <div id="subject-buttons"></div>
+                </div>
+            </div>
+
+            <div id="chapter-list" class="section hidden">
+                <h2 id="chapter-header"></h2>
+                <div class="card">
+                    <h3><i data-lucide="book-open"></i> Chapters</h3>
+                    <div id="chapter-accordion"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 seed Education. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
