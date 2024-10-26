@@ -37,19 +37,19 @@ def create_manim_script(prompts, audio_files):
     manim_script = f"""
 from manim import *
 
-class VennDiagramScene(Scene):
+class ConceptScene(Scene):
     def construct(self):
-        # Create the circles for Set A and Set B
+        # Create visual elements for illustrating the concept
         circle_a = Circle(color=BLUE, fill_opacity=0.5).shift(LEFT)
         circle_b = Circle(color=GREEN, fill_opacity=0.5).shift(RIGHT)
 
-        # Create the intersection area
+        # Create the intersection area or general overlapping area
         intersection_area = Circle(color=LIGHT_BROWN, fill_opacity=0.3).shift(ORIGIN)
 
         # Create text labels
-        label_a = Tex("Set A: {{Alice, Bob, Charlie}}").next_to(circle_a, UP)
-        label_b = Tex("Set B: {{Charlie, David, Eve}}").next_to(circle_b, UP)
-        intersection_label = Tex("Intersection: {{Charlie}}").next_to(intersection_area, DOWN)
+        label_a = Tex("Group A").next_to(circle_a, UP)
+        label_b = Tex("Group B").next_to(circle_b, UP)
+        intersection_label = Tex("Overlap").next_to(intersection_area, DOWN)
 
         # Animate circles and labels
         self.play(Create(circle_a), Create(circle_b))
@@ -57,9 +57,9 @@ class VennDiagramScene(Scene):
         self.play(FadeIn(intersection_area))
         self.play(Write(intersection_label))
 
-        # Animate elements
-        elements_a = ["Alice", "Bob", "Charlie"]
-        elements_b = ["Charlie", "David", "Eve"]
+        # Animate concept elements
+        elements_a = ["A1", "A2", "A3"]
+        elements_b = ["B1", "B2", "B3"]
 
         for name in elements_a:
             element = Tex(name).set_color(YELLOW)
@@ -85,11 +85,11 @@ if __name__ == "__main__":
     manim_main.main()
 """
     # Save the script
-    with open("venn_diagram_scene.py", "w") as f:
+    with open("concept_scene.py", "w") as f:
         f.write(manim_script)
 
 def render_video():
-    os.system("manim -pql venn_diagram_scene.py VennDiagramScene")
+    os.system("manim -pql concept_scene.py ConceptScene")
 
 def main(concept):
     explanation, prompts = generate_explanation_and_prompts(concept)
@@ -98,5 +98,4 @@ def main(concept):
     render_video()
 
 if __name__ == "__main__":
-    main("Venn Diagrams")
-
+    main("Enter a concept")
