@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeeEd Education Platform</title>
+    <link rel="stylesheet" href="https://unpkg.com/lucide@latest/dist/lucide.css">
+    <style>
+        /* CSS Styles */
+        :root {
+            --primary: #3b82f6;
+            --secondary: #f3f4f6;
+            --background: #ffffff;
+            --foreground: #1f2937;
+            --card: #ffffff;
+            --muted-foreground: #6b7280;
+            --accent: #f3f4f6;
+            --accent-foreground: #1f2937;
+            --destructive: #ef4444;
+            --destructive-foreground: #ffffff;
+            --border: #e5e7eb;
+            --input: #e5e7eb;
+            --ring: #3b82f6;
+        }
+        /* General Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, var(--background), var(--secondary));
+            color: var(--foreground);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .bg-card {
+            background-color: var(--card);
+        }
+        .text-primary { color: var(--primary); }
+        .text-foreground { color: var(--foreground); }
+        .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        /* Accordion and Topic List */
+        .accordion-item { border-bottom: 1px solid var(--border); }
+        .accordion-trigger { width: 100%; text-align: left; padding: 1rem 0; background: none; border: none; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; }
+        .accordion-trigger::before { content: '\25B6'; margin-right: 0.5rem; transition: transform 0.3s; }
+        .accordion-trigger[aria-expanded="true"]::before { transform: rotate(90deg); }
+        .accordion-content { padding: 1rem 0 1rem 1.5rem; display: none; }
+        .accordion-content.open { display: block; }
+        .topic-list { list-style-type: none; padding: 0; margin: 0; }
+        .topic-list li { margin-bottom: 0.5rem; display: flex; align-items: center; }
+        .topic-list li::before { content: '\25B6'; color: var(--primary); margin-right: 0.5rem; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button id="menu-trigger" class="text-primary">Menu</button>
+        </header>
+        <aside id="side-nav" class="fixed left-0 top-0 transform -translate-x-full transition-transform duration-300">
+            <button id="close-nav" class="text-primary">Close</button>
+        </aside>
+        <section>
+            <select id="class-select" class="w-full p-4 border border-gray-300 rounded-lg">
+                <option selected disabled>Select Class</option>
+            </select>
+            <div id="board-buttons" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>
+        </section>
+        <section id="subject-selection" class="hidden">
+            <h2 id="subject-header" class="text-3xl font-semibold mb-4"></h2>
+            <div id="subject-buttons" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+        <section id="chapter-list" class="hidden">
+            <h3 id="chapter-header" class="text-2xl font-bold mb-6"></h3>
+            <div id="chapter-accordion"></div>
+        </section>
+    </div>
+    <script src="https://unpkg.com/lucide@latest/dist/lucide.min.js"></script>
+    <script>
+        // JavaScript Code
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            const boards = [
+                { name: 'ICSE', icon: 'school', color: '#ec4899' },
+                { name: 'SSC', icon: 'award', color: '#8b5cf6' },
+                { name: 'CBSE', icon: 'book-open', color: '#3b82f6' },
+                { name: 'IGCSE', icon: 'graduation-cap', color: '#22c55e' },
+            ];
+            const subjects = [
+                { name: 'Physics', color: '#3b82f6', icon: 'atom' },
+                { name: 'Chemistry', color: '#22c55e', icon: 'flask' },
+                { name: 'Mathematics', color: '#ef4444', icon: 'square-equal' },
+                { name: 'Biology', color: '#eab308', icon: 'leaf' },
+                { name: 'English', color: '#8b5cf6', icon: 'book-open' },
+                { name: 'Geography', color: '#06b6d4', icon: 'globe' },
+            ];
+            const subjectChapters = { /*...*/ }; // Omitted for brevity
+            const chapterTopics = { /*...*/ }; // Omitted for brevity
+            let selectedClass = null;
+            let selectedBoard = null;
+            let selectedSubject = null;
+            const menuTrigger = document.getElementById('menu-trigger');
+            const closeNav = document.getElementById('close-nav');
+            const sideNav = document.getElementById('side-nav');
+            const classSelect = document.getElementById('class-select');
+            const boardButtons = document.getElementById('board-buttons');
+            const subjectSelection = document.getElementById('subject-selection');
+            const subjectHeader = document.getElementById('subject-header');
+            const subjectButtons = document.getElementById('subject-buttons');
+            const chapterList = document.getElementById('chapter-list');
+            const chapterHeader = document.getElementById('chapter-header');
+            const chapterAccordion = document.getElementById('chapter-accordion');
+            menuTrigger.addEventListener('click', () => sideNav.style.transform = 'translateX(0)');
+            closeNav.addEventListener('click', () => sideNav.style.transform = 'translateX(-100%)');
+            for (let i = 1; i <= 12; i++) {
+                const option = document.createElement('option');
+                option.value = `Class ${i}`;
+                option.textContent = `Class ${i}`;
+                classSelect.appendChild(option);
+            }
+            classSelect.addEventListener('change', (e) => {
+                selectedClass = e.target.value;
+                updateBoardButtons();
+            });
+            boards.forEach(board => {
+                const button = document.createElement('button');
+                button.innerHTML = `<i data-lucide="${board.icon}" class="mr-2 h-5 w-5"></i>${board.name}`;
+                button.style.backgroundColor = board.color;
+                button.style.color = 'white';
+                button.className = 'w-full font-semibold transition-all duration-200 transform hover:scale-105';
+                button.addEventListener('click', () => selectBoard(board.name));
+                boardButtons.appendChild(button);
+            });
+            function updateBoardButtons() {
+                Array.from(boardButtons.children).forEach(button => {
+                    button.disabled = !selectedClass;
+                });
+            }
+            function selectBoard(board) {
+                selectedBoard = board;
+                subjectSelection.classList.remove('hidden');
+                subjectHeader.textContent = `${selectedBoard} - ${selectedClass}`;
+                renderSubjects();
+            }
+            function renderSubjects() {
+                subjectButtons.innerHTML = '';
+                subjects.forEach(subject => {
+                    const button = document.createElement('button');
+                    button.innerHTML = `<i data-lucide="${subject.icon}" class="mb-4 h-12 w-12"></i><span class="text-xl font-semibold">${subject.name}</span>`;
+                    button.style.backgroundColor = subject.color;
+                    button.style.color = 'white';
+                    button.className = 'p-8 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center space-y-4 h-48';
+                    button.addEventListener('click', () => selectSubject(subject.name));
+                    subjectButtons.appendChild(button);
+                });
+                lucide.createIcons();
+            }
+            function selectSubject(subject) {
+                selectedSubject = subject;
+                chapterList.classList.remove('hidden');
+                chapterHeader.textContent = `${selectedSubject} - ${selectedBoard} - ${selectedClass}`;
+                renderChapters();
+            }
+            function renderChapters() {
+                chapterAccordion.innerHTML = '';
+                const chapters = subjectChapters[selectedSubject] || [];
+                chapters.forEach((chapter, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'accordion-item';
+                    item.innerHTML = `
+                        <button class="accordion-trigger" aria-expanded="false">
+                            <span class="text-primary mr-2">${index + 1}.</span>
+                            ${chapter}
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="topic-list">
+                                ${(chapterTopics[chapter] || []).map(topic => `<li>${topic}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    chapterAccordion.appendChild(item);
+                    const trigger = item.querySelector('.accordion-trigger');
+                    const content = item.querySelector('.accordion-content');
+                    trigger.addEventListener('click', () => {
+                        const expanded = trigger.getAttribute('aria-expanded') === 'true' || false;
+                        trigger.setAttribute('aria-expanded', !expanded);
+                        content.classList.toggle('open');
+                    });
+                });
+            }
+            updateBoardButtons();
+        });
+    </script>
+</body>
+</html>
