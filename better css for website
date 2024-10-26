@@ -1,0 +1,159 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Data
+    const boards = [
+        { name: 'ICSE', icon: 'school', color: '#ec4899' },
+        { name: 'SSC', icon: 'award', color: '#8b5cf6' },
+        { name: 'CBSE', icon: 'book-open', color: '#3b82f6' },
+        { name: 'IGCSE', icon: 'graduation-cap', color: '#22c55e' },
+    ];
+
+    const subjects = [
+        { name: 'Physics', color: '#3b82f6', icon: 'atom' },
+        { name: 'Chemistry', color: '#22c55e', icon: 'flask' },
+        { name: 'Mathematics', color: '#ef4444', icon: 'square-equal' },
+        { name: 'Biology', color: '#eab308', icon: 'leaf' },
+        { name: 'English', color: '#8b5cf6', icon: 'book-open' },
+        { name: 'Geography', color: '#06b6d4', icon: 'globe' },
+    ];
+
+    const subjectChapters = {
+        Physics: [
+            "Introduction to Physics",
+            "Kinematics",
+            "Laws of Motion",
+            "Work, Energy, and Power",
+            "Gravitation",
+            "Thermodynamics",
+            "Oscillations and Waves",
+            "Optics",
+            "Electrostatics",
+            "Current Electricity",
+            "Magnetism and Electromagnetic Induction",
+            "Atomic and Nuclear Physics"
+        ],
+        // ... (other subjects' chapters)
+    };
+
+    const chapterTopics = {
+        "Introduction to Physics": [
+            "Nature of Physics",
+            "Physical Quantities and Measurement",
+            "SI Units and Fundamental Constants",
+            "Dimensional Analysis",
+            "Scalar and Vector Quantities",
+            "Errors in Measurement"
+        ],
+        // ... (other chapters' topics)
+    };
+
+    // State
+    let selectedClass = null;
+    let selectedBoard = null;
+    let selectedSubject = null;
+
+    // DOM Elements
+    const menuTrigger = document.getElementById('menu-trigger');
+    const closeNav = document.getElementById('close-nav');
+    const sideNav = document.getElementById('side-nav');
+    const classSelect = document.getElementById('class-select');
+    const boardButtons = document.getElementById('board-buttons');
+    const subjectSelection = document.getElementById('subject-selection');
+    const subjectHeader = document.getElementById('subject-header');
+    const subjectButtons = document.getElementById('subject-buttons');
+    const chapterList = document.getElementById('chapter-list');
+    const chapterHeader = document.getElementById('chapter-header');
+    const chapterAccordion = document.getElementById('chapter-accordion');
+
+    // Event Listeners
+    menuTrigger.addEventListener('click', () => sideNav.classList.add('open'));
+    closeNav.addEventListener('click', () => sideNav.classList.remove('open'));
+
+    // Initialize class select
+    for (let i = 1; i <= 12; i++) {
+        const option = document.createElement('option');
+        option.value = `Class ${i}`;
+        option.textContent = `Class ${i}`;
+        classSelect.appendChild(option);
+    }
+
+    classSelect.addEventListener('change', (e) => {
+        selectedClass = e.target.value;
+        updateBoardButtons();
+    });
+
+    // Initialize board buttons
+    boards.forEach(board => {
+        const button = document.createElement('button');
+        button.innerHTML = `<i data-lucide="${board.icon}"></i>${board.name}`;
+        button.style.backgroundColor = board.color;
+        button.addEventListener('click', () => selectBoard(board.name));
+        boardButtons.appendChild(button);
+    });
+
+    function updateBoardButtons() {
+        Array.from(boardButtons.children).forEach(button => {
+            button.disabled = !selectedClass;
+        });
+    }
+
+    function selectBoard(board) {
+        selectedBoard = board;
+        subjectSelection.classList.remove('hidden');
+        subjectHeader.textContent = `${selectedBoard} - ${selectedClass}`;
+        renderSubjects();
+    }
+
+    function renderSubjects() {
+        subjectButtons.innerHTML = '';
+        subjects.forEach(subject => {
+            const button = document.createElement('button');
+            button.innerHTML = `<i data-lucide="${subject.icon}"></i>${subject.name}`;
+            button.style.backgroundColor = subject.color;
+            button.addEventListener('click', () => selectSubject(subject.name));
+            subjectButtons.appendChild(button);
+        });
+        lucide.createIcons();
+    }
+
+    function selectSubject(subject) {
+        selectedSubject = subject;
+        chapterList.classList.remove('hidden');
+        chapterHeader.textContent = `${selectedSubject} - ${selectedBoard} - ${selectedClass}`;
+        renderChapters();
+    }
+
+    function renderChapters() {
+        chapterAccordion.innerHTML = '';
+        const chapters = subjectChapters[selectedSubject] || [];
+        chapters.forEach((chapter, index) => {
+            const item = document.createElement('div');
+            item.className = 'accordion-item';
+            item.innerHTML = `
+                <button class="accordion-trigger" aria-expanded="false">
+                    <span class="chapter-number">${index + 1}.</span>
+                    ${chapter}
+                </button>
+                <div class="accordion-content">
+                    <ul class="topic-list">
+                        ${(chapterTopics[chapter] || []).map(topic => `<li>${topic}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            chapterAccordion.appendChild(item);
+
+            const trigger = item.querySelector('.accordion-trigger');
+            const content = item.querySelector('.accordion-content');
+            trigger.addEventListener('click', () => {
+                const expanded = trigger.getAttribute('aria-expanded') === 'true' || false;
+                trigger.setAttribute('aria-expanded', !expanded);
+                content.classList.toggle('open');
+            });
+        });
+    }
+
+    // Initial setup
+    updateBoardButtons();
+});
