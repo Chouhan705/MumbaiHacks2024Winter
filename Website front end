@@ -1,0 +1,320 @@
+'use client'
+
+import React, { useState } from 'react'
+import { Eye, Atom, Beaker, PiSquare, Leaf, BookOpen, Globe, ArrowLeft, ChevronRight, GraduationCap, School, Award, Menu, ChevronDown } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import Link from 'next/link'
+
+const boards = [
+  { name: 'ICSE', icon: School, color: 'bg-pink-500 hover:bg-pink-600' },
+  { name: 'SSC', icon: Award, color: 'bg-purple-500 hover:bg-purple-600' },
+  { name: 'CBSE', icon: BookOpen, color: 'bg-blue-500 hover:bg-blue-600' },
+  { name: 'IGCSE', icon: GraduationCap, color: 'bg-green-500 hover:bg-green-600' },
+]
+
+const subjects = [
+  { name: 'Physics', color: 'bg-blue-500 hover:bg-blue-600', icon: Atom },
+  { name: 'Chemistry', color: 'bg-green-500 hover:bg-green-600', icon: Beaker },
+  { name: 'Mathematics', color: 'bg-red-500 hover:bg-red-600', icon: PiSquare },
+  { name: 'Biology', color: 'bg-yellow-500 hover:bg-yellow-600', icon: Leaf },
+  { name: 'English', color: 'bg-purple-500 hover:bg-purple-600', icon: BookOpen },
+  { name: 'Geography', color: 'bg-cyan-500 hover:bg-cyan-600', icon: Globe },
+]
+
+const subjectChapters = {
+  Physics: [
+    "Introduction to Physics",
+    "Kinematics",
+    "Laws of Motion",
+    "Work, Energy, and Power",
+    "Gravitation",
+    "Thermodynamics",
+    "Oscillations and Waves",
+    "Optics",
+    "Electrostatics",
+    "Current Electricity",
+    "Magnetism and Electromagnetic Induction",
+    "Atomic and Nuclear Physics"
+  ],
+  Chemistry: [
+    "Matter and its Composition",
+    "Atomic Structure",
+    "Periodic Table and Periodicity",
+    "Chemical Bonding",
+    "States of Matter",
+    "Thermochemistry",
+    "Chemical Kinetics",
+    "Chemical Equilibrium",
+    "Acids, Bases, and Salts",
+    "Electrochemistry",
+    "Organic Chemistry: Basics",
+    "Hydrocarbons"
+  ],
+  Mathematics: [
+    "Sets and Functions",
+    "Algebra",
+    "Coordinate Geometry",
+    "Calculus: Limits and Derivatives",
+    "Mathematical Reasoning",
+    "Statistics and Probability",
+    "Trigonometry",
+    "Vectors and 3D Geometry",
+    "Matrices and Determinants",
+    "Complex Numbers",
+    "Integral Calculus",
+    "Differential Equations"
+  ],
+  Biology: [
+    "Cell: The Unit of Life",
+    "Biological Classification",
+    "Plant Kingdom",
+    "Animal Kingdom",
+    "Morphology of Flowering Plants",
+    "Anatomy of Flowering Plants",
+    "Structural Organization in Animals",
+    "Cell Cycle and Cell Division",
+    "Biomolecules",
+    "Cell Membrane and Transport",
+    "Photosynthesis",
+    "Respiration in Plants"
+  ],
+  English: [
+    "Reading Comprehension",
+    "Writing Skills: Essays and Letters",
+    "Grammar: Parts of Speech",
+    "Vocabulary Building",
+    "Literature: Prose",
+    "Literature: Poetry",
+    "Literature: Drama",
+    "Figurative Language",
+    "Critical Analysis",
+    "Creative Writing",
+    "Communication Skills",
+    "Media Literacy"
+  ],
+  Geography: [
+    "Introduction to Geography",
+    "Map Skills and Techniques",
+    "Physical Geography: Landforms",
+    "Climate and Weather",
+    "Ecosystems and Biomes",
+    "Population and Demographics",
+    "Urban Geography",
+    "Economic Geography",
+    "Political Geography",
+    "Cultural Geography",
+    "Environmental Issues and Sustainability",
+    "Geographical Information Systems (GIS)"
+  ]
+}
+
+const chapterTopics = {
+  "Introduction to Physics": [
+    "Nature of Physics",
+    "Physical Quantities and Measurement",
+    "SI Units and Fundamental Constants",
+    "Dimensional Analysis",
+    "Scalar and Vector Quantities",
+    "Errors in Measurement"
+  ],
+  "Kinematics": [
+    "Motion in One Dimension",
+    "Motion in Two Dimensions",
+    "Projectile Motion",
+    "Relative Motion",
+    "Graphs of Motion",
+    "Equations of Motion"
+  ],
+  // Add topics for other chapters similarly
+}
+
+export default function AllInOnePage() {
+  const [open, setOpen] = useState(false)
+  const [selectedClass, setSelectedClass] = useState<string | null>(null)
+  const [selectedBoard, setSelectedBoard] = useState<string | null>(null)
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
+  const [selectedChapter, setSelectedChapter] = useState<string | null>(null)
+
+  const handleClassSelection = (classValue: string) => {
+    setSelectedClass(classValue)
+    setSelectedBoard(null)
+    setSelectedSubject(null)
+    setSelectedChapter(null)
+  }
+
+  const handleBoardSelection = (board: string) => {
+    setSelectedBoard(board)
+    setSelectedSubject(null)
+    setSelectedChapter(null)
+  }
+
+  const handleSubjectSelection = (subject: string) => {
+    setSelectedSubject(subject)
+    setSelectedChapter(null)
+  }
+
+  const handleChapterSelection = (chapter: string) => {
+    setSelectedChapter(chapter)
+  }
+
+  const renderClassBoardSelection = () => (
+    <div className="max-w-md mx-auto space-y-8">
+      <h2 className="text-3xl font-bold mb-8 text-center text-indigo-800 dark:text-indigo-200">
+        Select Your Class and Board
+      </h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <Select onValueChange={handleClassSelection}>
+          <SelectTrigger className="w-full mb-4">
+            <SelectValue placeholder="Select Class" />
+          </SelectTrigger>
+          <SelectContent>
+            {[...Array(12)].map((_, i) => (
+              <SelectItem key={i + 1} value={`Class ${i + 1}`}>
+                <div className="flex items-center">
+                  <GraduationCap className="mr-2 h-4 w-4 text-indigo-500" />
+                  Class {i + 1}
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="grid grid-cols-2 gap-4">
+          {boards.map((board) => (
+            <Button 
+              key={board.name} 
+              variant="outline" 
+              className={`w-full ${board.color} text-white font-semibold transition-all duration-200 transform hover:scale-105`}
+              onClick={() => handleBoardSelection(board.name)}
+              disabled={!selectedClass}
+            >
+              <board.icon className="mr-2 h-5 w-5" />
+              {board.name}
+            </Button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderSubjects = () => (
+    <div className="max-w-4xl mx-auto">
+      <h2 className="text-3xl font-bold mb-8 text-center text-indigo-800 dark:text-indigo-200">
+        {selectedBoard} - {selectedClass}
+      </h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h3 className="text-2xl font-semibold mb-6 text-center text-gray-800 dark:text-gray-200">Select a Subject</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {subjects.map((subject) => (
+            <Button
+              key={subject.name}
+              className={`${subject.color} text-white p-8 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center space-y-4 h-48`}
+              onClick={() => handleSubjectSelection(subject.name)}
+            >
+              <subject.icon size={48} />
+              <span className="text-xl font-semibold">{subject.name}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderChapters = () => {
+    const chapters = subjectChapters[selectedSubject as keyof typeof subjectChapters] || []
+    return (
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold mb-8 text-center text-indigo-800 dark:text-indigo-200">
+          {selectedSubject} - {selectedBoard} - {selectedClass}
+        </h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <h3 className="text-2xl font-semibold mb-6 flex items-center text-gray-800 dark:text-gray-200">
+            <BookOpen className="mr-2" />
+            Chapters
+          </h3>
+          <Accordion type="single" collapsible className="w-full">
+            {chapters.map((chapter, index) => (
+              <AccordionItem value={`item-${index}`} key={index}>
+                <AccordionTrigger onClick={() => handleChapterSelection(chapter)}>
+                  <span className="flex items-center">
+                    <span className="text-indigo-500 dark:text-indigo-400 mr-2">{index + 1}.</span>
+                    {chapter}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  {renderTopics(chapter)}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </div>
+    )
+  }
+
+  const renderTopics = (chapter: string) => {
+    const topics = chapterTopics[chapter as keyof typeof chapterTopics] || []
+    return (
+      <ul className="space-y-2 ml-6">
+        {topics.map((topic, index) => (
+          <li key={index} className="flex items-center">
+            <ChevronRight className="h-4 w-4 mr-2 text-indigo-500" />
+            <span>{topic}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 dark:from-indigo-900 dark:via-purple-900 dark:to-pink-900 text-foreground">
+      <header className="p-4 flex items-center justify-between bg-white dark:bg-gray-800 shadow-md">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" className="p-0">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[250px] sm:w-[300px]">
+            <nav className="flex flex-col gap-4">
+              <Link href="/" className="text-lg font-semibold">
+                Home
+              </Link>
+              <Link href="/personal-details" className="text-lg font-semibold">
+                Personal Details
+              </Link>
+              <Link href="/signup" className="text-lg font-semibold">
+                Sign Up
+              </Link>
+              <Link href="/logout" className="text-lg font-semibold">
+                Logout
+              </Link>
+              <Link href="mailto:helpdesk@example.com" className="text-lg font-semibold">
+                Help Desk
+              </Link>
+            </nav>
+          </SheetContent>
+        </Sheet>
+        <h1 className="text-2xl font-bold flex items-center justify-center flex-grow">
+          se<Eye className="mx-1 text-blue-500" />ed
+        </h1>
+      </header>
+      <main className="container mx-auto mt-12 px-4 pb-12">
+        {!selectedBoard && renderClassBoardSelection()}
+        {selectedBoard && !selectedSubject && renderSubjects()}
+        {selectedSubject && renderChapters()}
+      </main>
+      <footer className="mt-12 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p>© 2024 seed Education. All rights reserved.</p>
+      </footer>
+    </div>
+  )
+}
